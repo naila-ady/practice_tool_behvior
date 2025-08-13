@@ -1,7 +1,6 @@
 from config import config
 from agents import Agent,Runner,function_tool,ModelSettings,enable_verbose_stdout_logging
 from agents.agent import StopAtTools
-
 import asyncio
 # enable_verbose_stdout_logging()
 
@@ -17,7 +16,6 @@ def human_review():
     print("Human review called")
     return "Human in the loop called"
 
-
 stop_at_tool_agent=Agent(
     name="naila",
     instructions="You are a helpful asssistant who will stop at human_review tool ",
@@ -32,21 +30,19 @@ on_first_tool_agent=Agent(
     tools=[add,human_review],
     # tool_use_behavior="stop_on_first_tool",
     handoff_description="Handles add tool"
-
 )
 
 triage_agent=Agent(
     name="triage_agent",
     instructions="You are a triage agent and transfer to agents as per the user input",
     tools=[add,human_review],
-    # tool_use_behavior=StopAtTools(stop_at_tool_names=["add"]),
-    tool_use_behavior=StopAtTools(stop_at_tool_names=["human_review"]),
+    tool_use_behavior=StopAtTools(stop_at_tool_names=["add"]),
+    # tool_use_behavior=StopAtTools(stop_at_tool_names=["human_review"]),
     # agar ye line uncomment ki to handsoff srf human_review tool call
     # hoga aur sath m runner mai input m say add ko hata kr review akhri may dena hoga
     # tool_use_behavior="stop_on_first_tool", 
     handoffs=[on_first_tool_agent,stop_at_tool_agent]
 )
-
 
 async def main():
     result=await Runner.run(triage_agent,input=" aur 2 main 2 plus kro ,aur phir human review karo",run_config=config)
